@@ -1,0 +1,388 @@
+'use strict';
+const Alexa = require('ask-sdk-core');
+var request = require('request');
+var data = '';
+
+ var cuisineNames;
+ var Chain;
+ var Offer;
+ var Brand;
+
+exports.index_handler = function (event,context) {
+  
+    
+};
+       
+
+     var http = require( 'https' );
+     var url = 'https://virtserver.swaggerhub.com/the-dcg/restaurant-service/1.9.0/restaurant?offset=0&limit=100&geoFromIp=0&cuisines%5B%5D=Indian';
+   
+        request( url, function(error, response,body ) { 
+            if(error){
+             console.log('error:',error);}
+             else{
+             var resp = JSON.parse( body );
+         
+             console.log('result inside swageer function--->',resp);
+              var cuisines = resp[0].cuisines[0];
+              console.log('cuisines Name',cuisines.name);
+              cuisineNames = cuisines.name;
+              var chain = resp[0].chain;
+              Chain = chain.name;
+               var  offers = resp[0].offers[0];
+               Offer = offers.name;
+              var  brand = resp[0].brand;
+              Brand = brand.name;
+               console.log('chain Name========',chain.name);
+               console.log('offers Name=-------->',offers.name);
+               console.log('brand Name=-------->',brand.name);
+              
+              
+                response.on( 'data', function( chunk )
+                { 
+                  
+                  data += chunk; } );
+                
+                response.on( 'end', function() {
+
+          
+             cuisines = resp[0].cuisines[0];
+             chain = resp[0].chain[0];
+             brand = resp[0].brand[0];
+            
+             console.log('cuisines Name',cuisines.name);
+             console.log('chain Name========',chain.name);
+              offers = resp[0].offers[0];
+                  console.log('offers Name=-------->',offers.name);
+              var text = ('Restaurants serving Indian cuisines are ');
+          
+            output( text, context );
+
+
+        
+         });
+         }
+        });
+        
+         
+         
+function output( text, context ) {
+
+    var response = {
+        outputSpeech: {
+            type: "PlainText",
+            text: text
+        },
+        card: {
+            type: "Simple",
+            title: "restaurant",
+            content: text
+        },
+        shouldEndSession: true,
+        };
+
+    context.succeed( { response: response } );
+}
+
+ const LaunchRequestHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
+           },
+    handle(handlerInput) {
+        const speechText = 'welcome to Tastecard+,  Are you looking for the offers available on tastecard?';
+      
+         
+return handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt(speechText)
+            .withSimpleCard('restaurant', speechText)
+            .getResponse();
+            
+           
+    }
+
+};
+const WelcomeIntentHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+            && handlerInput.requestEnvelope.request.intent.name === 'WelcomeIntent';
+    },
+    handle(handlerInput) {
+	    const speechText = 'welcome to Tastecard+,  Are you looking for the offers available on tastecard?';
+        const repromptText = 'welcome to Tastecard+, a special platform for the members of tastecard. are you looking for the offers available on tastecard?';        const shouldEndSession = false;
+return handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt(repromptText)
+            .withShouldEndSession(false)
+            .withSimpleCard('restaurant', speechText)
+         .getResponse(speechText, repromptText,shouldEndSession);
+    }
+};
+const HotelOfferHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+            && handlerInput.requestEnvelope.request.intent.name === 'HotelOffer';
+    },
+    handle(handlerInput) {
+	    const speechText = 'save upto 70% on hotels, Enjoy fantastic discounts of up to 70% on any of the 400,000 hotels and resorts globally with Hotelogical and tastecard. Enjoy an extra £50 saving on a fantastic Haven Holidays break. 10% Off at Cottages.com. To avail these interesting offers  hurry up to get tastecard membership,  log on to our tastecard website.';
+        const repromptText = 'These are some of the offers on hotels, check offers on Fine Dining, Entertainment, and DaysOut ';
+        const shouldEndSession = false;
+return handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt(repromptText)
+            .withShouldEndSession(false)
+            .withSimpleCard('restaurant', speechText)
+         .getResponse(speechText, repromptText,shouldEndSession);
+    }
+};
+const FineDiningOfferHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+            && handlerInput.requestEnvelope.request.intent.name === 'FineDiningOffer';
+    },
+    handle(handlerInput) {
+	    const speechText = 'Save upto 50% on FineDining, Get 30% off the total bill when dining at the wonderful AA Rosette awarded gastropub, The Red Lion at Pendoylan. Enjoy a fantastic 20% discount on the total bill at La Belle Epoque, including drinks. 25% Off the Total Bill at The Norfolk Mead Hotel. To know more about these offers register to our tastecard website.';
+        const repromptText = 'these are offers  on FineDining, check offers on Entertainment, DaysOut and Hotels';
+        const shouldEndSession = false;
+return handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt(repromptText)
+            .withSimpleCard('restaurant', speechText)
+         .getResponse(speechText, repromptText,shouldEndSession);
+    }
+};
+const EntertainmentOfferHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+            && handlerInput.requestEnvelope.request.intent.name === 'EntertainmentOffer';
+    },
+    handle(handlerInput) {
+	    const speechText = 'Save upto 60% on Entertainment, Cinema offers, Enjoy up to 40% off tickets to Vue, and treat yourself to the latest blockbuster on the big screen, Make your way over to an ODEON cinema near you and enjoy the latest Blockbusters for less, to avail more insight on entertainment offers log on to our Tastecard website ';
+        const repromptText = 'these are some top offers  on Entertainment, check offers on  DaysOut, FineDining and Hotels';
+        const shouldEndSession = false;
+return handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt(repromptText)
+            .withShouldEndSession(false)
+            .withSimpleCard('restaurant', speechText)
+         .getResponse(speechText, repromptText,shouldEndSession);
+    }
+};
+const DaysOutOfferHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+            && handlerInput.requestEnvelope.request.intent.name === 'DaysOutOffer';
+    },
+    handle(handlerInput) {
+	    const speechText = 'Save upto 50% on DaysOut. Enjoy up to 57% off entry to Drayton Manors Magical Christmas event. Register to our tastecard website to know more about offers';
+        const repromptText = 'here I said about DaysOutOffer,check offers on  Entertainment, FineDining and Hotels ';
+        const shouldEndSession = false;
+return handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt(repromptText)
+            .withShouldEndSession(false)
+            .withSimpleCard('restaurant', speechText)
+         .getResponse(speechText, repromptText,shouldEndSession);
+    }
+};
+
+
+
+
+const HelpIntentHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+            && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.HelpIntent';
+    },
+    handle(handlerInput) {
+        const speechText = 'how can I help you? would you like to know anything else?';
+        const repromptText = 'how can I help you';
+        const shouldEndSession = false;
+   return handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt(speechText)
+            .withShouldEndSession(false)
+            .withSimpleCard('restaurant', speechText)
+          .getResponse(speechText, repromptText, shouldEndSession);
+    }
+};
+const YesIntentHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+            && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.YesIntent';
+            },
+    handle(handlerInput) {
+        const speechText = 'we have exciting offers for the members of tastecard on Hotels, Fine Dining, Entertainment and Daysout. which one would you like to know?'; 
+        const repromptText = 'would you like to know any offers?';
+        const shouldEndSession = false;
+return handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt(speechText)
+            .withShouldEndSession(false)
+            .withSimpleCard('restaurant', speechText)
+            .getResponse(speechText, repromptText, shouldEndSession);
+    }
+};
+const NoIntentHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+            && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.NoIntent';
+            },
+    handle(handlerInput) {
+        const speechText = 'how can I be of your help?';
+        const repromptText = 'ok thanks for using my services';
+        const shouldEndSession = false;
+return handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt(speechText)
+            .withShouldEndSession(false)
+            .withSimpleCard('restaurant', speechText)
+           .getResponse(speechText, repromptText, shouldEndSession);
+    }
+};
+
+const StopIntentHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+            && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent';
+                
+    },
+    handle(handlerInput) {
+         const speechText = 'Thanks for using Tastecard+. Good day';
+          const repromptText = 'Bye';
+         const shouldEndSession = true;
+return handlerInput.responseBuilder
+            .reprompt(repromptText)
+            .speak(speechText)
+            .withShouldEndSession(true)
+            .withSimpleCard('restaurant', speechText)
+           .getResponse(speechText, repromptText, shouldEndSession);
+    }
+};
+const CancelIntentHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+            && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.CancelIntent';
+    },
+    handle(handlerInput) {
+        const speechText = 'Thanks for using the services of Tastecard+, Have a great day, see you soon.';
+        const repromptText = 'have a nice day, bye.';
+        const shouldEndSession = true;
+return handlerInput.responseBuilder
+            .reprompt(repromptText)
+            .speak(speechText)
+            .withShouldEndSession(true)
+            .withSimpleCard('restaurant', speechText)
+           .getResponse(speechText, repromptText, shouldEndSession);
+    }
+};
+const FallbackIntentHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+            && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.FallbackIntent';
+               
+    },
+    handle(handlerInput) {
+        const speechText = 'Sorry, I have not been trained to answer this. ';
+          const repromptText = 'have a nice day';
+        const shouldEndSession = false;
+return handlerInput.responseBuilder
+            .reprompt(repromptText)
+            .speak(speechText)
+            .withShouldEndSession(false)
+            .withSimpleCard('restaurant', speechText)
+           .getResponse(speechText, repromptText, shouldEndSession);
+    }
+};
+const SessionEndedRequestHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'SessionEndedRequest';
+    },
+    handle(handlerInput) {
+        //any cleanup logic goes here
+        return handlerInput.responseBuilder.getResponse();
+    }
+};
+const ErrorHandler = {
+    canHandle() {
+      return true;
+    },
+    handle(handlerInput, error) {
+      console.log(`Error handled: ${error.message}`);
+return handlerInput.responseBuilder
+        .speak('Sorry, I can\'t understand that.')
+        .reprompt('Sorry, I can\'t understand that.')
+        .getResponse();
+    },
+};
+
+
+
+exports.index_handler = Alexa.SkillBuilders.custom()
+     .addRequestHandlers(LaunchRequestHandler,
+                         WelcomeIntentHandler,
+                         YesIntentHandler,
+                         NoIntentHandler,
+                         HotelOfferHandler,
+                         FineDiningOfferHandler,
+                         EntertainmentOfferHandler,
+                         DaysOutOfferHandler,
+                         HelpIntentHandler,
+                         StopIntentHandler,
+                         CancelIntentHandler,
+                         FallbackIntentHandler,
+                         ErrorHandler,
+                         SessionEndedRequestHandler)
+.lambda();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
